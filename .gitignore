@@ -1,0 +1,4 @@
+# WingIDE project files
+*.wpr
+*.wpu
+__pycache__
