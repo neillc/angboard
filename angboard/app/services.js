@@ -101,10 +101,10 @@ appServices.factory('apiService', [
       if (service.is_authenticated) {
         config.headers['X-Auth-Token'] = service.access().token.id;
       }
-      return $http(config).success(function (response, status) {
+      return $http(config).success(function (response, status, headers) {
         $log.debug('apiCall success', status, response);
         try {
-          onSuccess(response, status);
+          onSuccess(response, status, headers);
         } catch (e) {
           $log.error('Error handling response', e);
           displayError(alertService, response);
@@ -160,6 +160,27 @@ appServices.factory('apiService', [
 
     service.POST = function (svc_name, url, data, onSuccess, onError) {
       dataCall(svc_name, 'POST', url, data, onSuccess, onError);
+    };
+
+    service.HEAD = function (svc_name, url, onSuccess, onError) {
+      var endpoint_url;
+      
+      if (svc_name == 'swift') {
+        endpoint_url = '/';
+      }
+      else {
+        endpoint_url = '/RegionOne/';
+      }
+      
+      return apiCall({
+        method: "HEAD",
+        url: '/' + svc_name + endpoint_url + url, // XXX REGION
+        headers : {
+          'Accept': 'application/json'
+        },
+        timeout: httpTimeoutMs,
+        cache: false
+      }, onSuccess, onError);
     };
     return service;
   }
